@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x", "windows", "darwin", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// TODO: Define Product model
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  inventory   Int       @default(0)
+  // orders Order[] // Example relation, uncomment and define Order model
+}
+
+// TODO: Define Order model
+// model Order {
+//   id          String    @id @default(cuid())
+//   createdAt   DateTime  @default(now())
+//   updatedAt   DateTime  @updatedAt
+//   totalAmount Float
+//   products    Product[] // Example relation
+//   // userId      String // Example relation to a User model if you have one
+// } 

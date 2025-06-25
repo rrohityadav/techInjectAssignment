@@ -1,0 +1,34 @@
+# Docker ignore rules
+
+# Ignore Git and IDE specific files
+.git
+.gitignore
+.dockerignore
+.vscode
+.idea
+
+# Ignore build output and dependency directories (these are handled within Docker stages)
+node_modules
+dist
+coverage
+.nyc_output
+
+# Log files and environment files
+*.log
+.env*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files and caches
+*.tsbuildinfo
+.npm
+.eslintcache
+
+# Other development files not needed in the image
+README.md
+ASSIGNMENT_DETAILS.md
+DECISIONS.md
+PROMPT.md
+*.tgz 
