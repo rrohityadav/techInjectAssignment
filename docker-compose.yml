@@ -12,9 +12,9 @@ services:
     env_file:
       - .env
     # Protect node_modules from being overwritten
-    volumes:
-      - .:/app
-      - /app/node_modules
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
 
   db:
     image: postgres:14
