@@ -1,3 +1,7 @@
+packages:
+  - '.'             # ← include the root project
+  # - 'packages/*'  # if you ever add sub-folders for multiple packages
+
 onlyBuiltDependencies:
   - '@prisma/client'
   - '@prisma/engines'

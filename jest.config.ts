@@ -19,12 +19,13 @@ const config: Config.InitialOptions = {
   coverageReporters: ['json', 'lcov', 'text', 'clover'],
   coverageThreshold: {
     global: {
-      branches: 0, // TODO: Increase once business logic is added
-      functions: 0, // TODO: Increase once business logic is added
-      lines: 0, // TODO: Increase once business logic is added
-      statements: 0, // TODO: Increase once business logic is added
-    },
+      branches:   95,
+      functions:  95,
+      lines:      95,
+      statements: 95,
+    }
   },
+
 };
 
 export default config;

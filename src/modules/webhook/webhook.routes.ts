@@ -10,6 +10,7 @@ export default async function webhookRoutes(
 
   fastify.post('/webhooks', {
     schema: {
+      preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
       tags: ['Webhook'],
       summary: 'Register for stock notifications',
       body: {

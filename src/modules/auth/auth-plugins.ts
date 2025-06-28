@@ -14,7 +14,6 @@ declare module 'fastify' {
 }
 
 export default fp(async function (server: FastifyInstance) {
-  // verify JWT and populate request.user
   server.decorate(
     'authenticate',
     async (request: FastifyRequest, reply: FastifyReply) => {
@@ -26,7 +25,6 @@ export default fp(async function (server: FastifyInstance) {
     }
   );
 
-  // factory that returns a preHandler
   server.decorate(
     'authorize',
     (requiredRole: RoleStr) =>

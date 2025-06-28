@@ -100,7 +100,6 @@ export default async function authRoutes(
     }
   });
 
-// Refresh Route
   fastify.post('/refresh', {
     schema: {
       tags: ['Auth'],
@@ -145,11 +144,8 @@ export default async function authRoutes(
     }
   });
 
-// Error handling middleware (add this to your main app file)
   fastify.setErrorHandler(function (error, request, reply) {
     fastify.log.error(error);
-
-    // Handle validation errors
     if (error.validation) {
       reply.status(400).send({
         message: 'Validation error',
@@ -157,8 +153,6 @@ export default async function authRoutes(
       });
       return;
     }
-
-    // Handle other errors
     reply.status(500).send({
       message: 'Internal Server Error'
     });

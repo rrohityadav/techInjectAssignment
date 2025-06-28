@@ -1,4 +1,6 @@
 import { Queue } from 'bullmq';
+
+const redisUrl = process.env.REDIS_URL;
 export const AvailabilityQueue = new Queue('availability', {
-  connection: { host: 'localhost', port: 6379 },
+  connection: { url: redisUrl }
 });

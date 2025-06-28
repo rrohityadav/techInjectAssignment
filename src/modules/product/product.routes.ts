@@ -36,6 +36,7 @@ export default async function productRoutes(
     '/',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('SELLER')],
         tags: ['Product'],
         summary: 'Get all products with pagination and filters',
         querystring: {
@@ -121,6 +122,7 @@ export default async function productRoutes(
     '/',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
         tags: ['Product'],
         summary: 'Create a product with variations',
         body: {
@@ -237,6 +239,7 @@ export default async function productRoutes(
     '/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('SELLER')],
         tags: ['Product'],
         summary: 'Get product by ID with full details',
         params: {
@@ -313,6 +316,7 @@ export default async function productRoutes(
     '/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
         tags: ['Product'],
         summary: 'Update a product',
         params: {
@@ -359,6 +363,7 @@ export default async function productRoutes(
     '/v1/updateByIdOrSku/:productIdOrSku',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
         tags: ['Product'],
         summary: 'Update a Product or ProductVariation by ID or SKU',
         params: {
@@ -428,6 +433,8 @@ export default async function productRoutes(
     '/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Product'],
         summary: 'Delete a product',
         params: {
@@ -461,6 +468,7 @@ export default async function productRoutes(
     '/byIdOrSku/:productIdOrSku',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('SELLER')],
         tags: ['Product'],
         summary: 'Get product or variation details by ID or SKU',
         params: {
@@ -569,6 +577,7 @@ export default async function productRoutes(
     '/variation-attributes',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
         tags: ['Variation-attributes'],
         required: ['name', 'value', 'variationId'],
         summary: 'Create a variations attributes',
@@ -608,6 +617,8 @@ export default async function productRoutes(
     '/update/variation-attributes/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Variation-attributes'],
         required: ['name', 'value', 'variationId'],
         summary: 'Create a variations attributes',
@@ -655,9 +666,11 @@ export default async function productRoutes(
   );
 
   fastify.delete(
-    'delete/variation-attributes/:id',
+    '/delete/variation-attributes/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Variation-attributes'],
         summary: 'Delete a variation-attributes',
         params: {
@@ -693,6 +706,8 @@ export default async function productRoutes(
     '/create/raw-material',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Raw Material'],
         summary: 'Create a raw material',
         body: {
@@ -739,6 +754,8 @@ export default async function productRoutes(
     '/raw-material/list',
     {
       schema: {
+
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
         tags: ['Raw Material'],
         summary: 'Create a raw material',
         response: {
@@ -769,6 +786,8 @@ export default async function productRoutes(
     '/raw-material/single/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Raw Material'],
         summary: 'Get a raw material by ID',
         params: {
@@ -815,9 +834,11 @@ export default async function productRoutes(
   );
 
   fastify.put(
-    'raw-material/update/:id',
+    '/raw-material/update/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Raw Material'],
         summary: 'Update a raw material by ID',
         params: {
@@ -875,9 +896,11 @@ export default async function productRoutes(
   //====================================bom==========================================
 
   fastify.post(
-    'bom/create',
+    '/bom/create',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Bom'],
         summary: 'Create Bom',
         body: {
@@ -918,6 +941,8 @@ export default async function productRoutes(
     '/bom/list',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Bom'],
         summary: 'Fetch bom list',
         response: {
@@ -943,9 +968,11 @@ export default async function productRoutes(
   );
 
   fastify.put(
-    'bom/update/:id',
+    '/bom/update/:id',
     {
       schema: {
+        preHandler: [fastify.authenticate, fastify.authorize('ADMIN')],
+
         tags: ['Bom'],
         summary: 'Update a bom by ID',
         params: {

@@ -1,10 +1,9 @@
-// src/modules/inventory/inventory.service.ts
+
 
 import { PrismaClient } from '@prisma/client';
 import { parse } from 'csv-parse/sync';
 import fs from 'fs';
 
-// --- 1) Types for the report ---
 export interface ReconciliationRow {
   sku: string;
   stock: number;

@@ -7,13 +7,11 @@ const REFRESH_TOKEN_TTL_DAYS = 7;
 export class AuthService {
   constructor(private prisma: PrismaClient) {}
 
-  // register a user (for demo; you might seed an ADMIN via migration)
   async register(email: string, password: string, role: Role) {
     const hash = await bcrypt.hash(password, 10);
     return this.prisma.user.create({ data: { email, password: hash, role } });
   }
 
-  // validate credentials
   async validate(email: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) return null;
@@ -21,7 +19,6 @@ export class AuthService {
     return ok ? user : null;
   }
 
-  // login: returns { accessToken, refreshToken }
   async login(user: { id: string; role: Role; email: string }, fastify: any) {
     const accessToken = fastify.jwt.sign(
       { id: user.id, role: user.role, email: user.email },
@@ -39,7 +36,6 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  // refresh flow
   async refresh(refreshToken: string, fastify: any) {
     const record = await this.prisma.refreshToken.findUnique({
       where: { token: refreshToken },
@@ -47,13 +43,11 @@ export class AuthService {
     });
     if (!record || record.expiresAt < new Date()) return null;
 
-    // issue new tokens
     const payload = {
       id: record.user.id,
       role: record.user.role,
       email: record.user.email,
     };
-    // optionally delete old refresh token:
     await this.prisma.refreshToken.delete({ where: { token: refreshToken } });
 
     return this.login(payload, fastify);
