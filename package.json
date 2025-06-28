@@ -5,8 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config src/index.ts",
+    "start:dev": " src/index.ts",
     "build": "tsc",
-    "start": "node --enable-source-maps dist/index.js",
+    "start": "node --enable-source-maps dist/src/index.js",
     "test": "jest",
     "lint": "eslint . --fix",
     "prisma:generate": "prisma generate",

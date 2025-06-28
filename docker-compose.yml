@@ -1,48 +1,32 @@
+version: "3.9"
+
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    platform: linux/amd64  # Ensures consistent platform across Mac (Intel/ARM), Linux, Windows
+    build: .
     ports:
       - "3000:3000"
     depends_on:
       - db
-      - cache
-    environment:
-      # Container-specific DATABASE_URL pointing to the 'db' service
-      DATABASE_URL: postgresql://user:password@db:5432/tech-inject-assignment?schema=public
-      REDIS_URL: redis://cache:6379
-      PORT: 3000
-      NODE_ENV: development
+      - redis
+    command: pnpm run start
+    env_file:
+      - .env
+    # Protect node_modules from being overwritten
     volumes:
-      - .:/usr/src/app # Mount entire directory for development
-      - /usr/src/app/node_modules # Don't mount node_modules from host
-      - /usr/src/app/dist # Don't mount dist from host
-    command: npm run dev
+      - .:/app
+      - /app/node_modules
 
   db:
     image: postgres:14
-    platform: linux/amd64  # Ensures consistent platform across Mac (Intel/ARM), Linux, Windows
-    ports:
-      # Host port 5433 maps to container port 5432. 
-      # Can be changed to "5432:5432" if host port 5432 is free.
-      - "5433:5432" 
+    restart: always
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: tech-inject-assignment
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_DB: fastifydb
+      POSTGRES_USER: fastifyuser
+      POSTGRES_PASSWORD: fastifypass
+    ports:
+      - "5432:5432"
 
-  cache:
-    image: redis:7
-    platform: linux/amd64  # Ensures consistent platform across Mac (Intel/ARM), Linux, Windows
+  redis:
+    image: redis:6.2
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  postgres_data:
-  redis_data: 

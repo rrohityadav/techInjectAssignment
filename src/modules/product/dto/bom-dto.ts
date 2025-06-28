@@ -1,7 +1,7 @@
 export class CreateBomDto {
-  quantityRequired: number;
-  variationId: string;
-  rawMaterialId: string;
+  quantityRequired!: number;
+  variationId!: string;
+  rawMaterialId!: string;
 }
 
 export class UpdateBomDto {

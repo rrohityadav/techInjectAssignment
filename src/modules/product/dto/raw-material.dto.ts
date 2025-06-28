@@ -1,7 +1,7 @@
 export class CreateRawMaterialDto {
-  name: string;
+  name!: string;
   description?: string;
-  unit: string;
+  unit!: string;
   quantity?: number;
   supplier?: string;
 }

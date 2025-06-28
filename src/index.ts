@@ -1,14 +1,8 @@
-import { initSentry } from './common/utils/sentry';
-
-
 console.log('DATABASE_URL from process.env:', process.env.DATABASE_URL);
 console.log('Attempting to load .env file from:', process.cwd());
 
-// console.log('DATABASE_URL from process.env:', process.env.DATABASE_URL);
-// console.log('Attempting to load .env file from:', process.cwd());
-
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-
+import { initSentry } from './common/utils/sentry';
 import sensible from '@fastify/sensible';
 import { PrismaClient } from '@prisma/client';
 import productRoutes from './modules/product/product.routes';
@@ -17,10 +11,6 @@ import { swaggerOptions, swaggerUiOptions } from './config/swagger';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import http from 'http';
-
-
-initSentry();
-
 import './modules/inventory/cron.service';
 import './modules/inventory/inventory.service';
 import './modules/queues/availability.worker';       // start the worker
@@ -28,6 +18,9 @@ import webhookRoutes from './modules/webhook/webhook.routes';
 import jwt from '@fastify/jwt';
 import authRoutes from './modules/auth/auth.routes';
 import './modules/auth/auth-plugins';
+
+
+initSentry();
 const prisma = new PrismaClient();
 
 async function main() {
@@ -55,12 +48,6 @@ async function main() {
     await server.register(swagger, swaggerOptions);
     await server.register(swaggerUi, swaggerUiOptions);
 
-    server.get(
-      '/healthz',
-      async (_request: FastifyRequest, reply: FastifyReply) => {
-        return reply.send({ status: 'ok' });
-      },
-    );
     server.get('/healthz', async (_request: FastifyRequest, reply: FastifyReply) => {
       return reply.send({ status: 'ok' });
     });

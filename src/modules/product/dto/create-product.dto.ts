@@ -1,13 +1,13 @@
 export class CreateVariationDto {
-  sku: string;
-  price: number;
+  sku!: string;
+  price!: number;
   stock?: number;
   attributes?: { name: string; value: string }[];
   bom?: { rawMaterialId: string; quantityRequired: number }[];
 }
 
 export class CreateProductDto {
-  name: string;
+  name!: string;
   description?: string;
   category?: string;
   variations?: CreateVariationDto[];
@@ -28,8 +28,8 @@ export class FindAllProducts {
 }
 
 export class PaginationResponse<T> {
-  data: T;
-  meta: {
+  data!: T;
+  meta!: {
     page: number;
     perPage: number;
     total: number;
