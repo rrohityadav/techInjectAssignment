@@ -1,0 +1,43 @@
+import {
+  FastifyInstance,
+  FastifyPluginOptions,
+  FastifyRequest,
+  FastifyReply,
+} from 'fastify';
+import { OrderController } from './order.controller';
+import { OrderService } from './order.service';
+import { PrismaClient } from '@prisma/client';
+
+export default function orderRoutes(
+  fastify: FastifyInstance,
+  options: FastifyPluginOptions & { prisma: PrismaClient },
+) {
+  const orderService = new OrderService(options.prisma);
+  const orderController = new OrderController(orderService);
+
+  // Example: Get all orders (stub)
+  fastify.get(
+    '/',
+    {
+      schema: {
+        tags: ['Order'],
+        summary: 'Get all orders (stub)',
+        response: {
+          200: {
+            description: 'Successful response - returns empty array',
+            type: 'array',
+            items: { type: 'object' }, // Define proper schema later
+          },
+        },
+      },
+    },
+    async (_request: FastifyRequest, reply: FastifyReply) => {
+      // TODO: Implement proper request validation and typing if needed
+      const orders = await orderController.getAllOrders();
+      return reply.send(orders);
+    },
+  );
+
+  // TODO: Add more order routes (POST, GET by ID, PUT, DELETE)
+  // TODO: Define schemas for request and response bodies
+}
