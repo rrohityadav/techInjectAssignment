@@ -163,6 +163,7 @@ Verify all services are running:
 - `npm run build`: Compile TypeScript to JavaScript
 - `npm run start`: Start production server
 - `npm run test`: Run Jest tests
+- `npm test -- --coverage`: Run Jest tests coverage
 - `npm run lint`: Lint and format code
 - `npm run prisma:generate`: Generate Prisma client
 - `npm run prisma:migrate:dev`: Create and apply new migrations

@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { PrismaClient } from '@prisma/client';
-import { InventoryService } from './inventory.service';  // ← relative path
+import { InventoryService } from './inventory.service';
 
 console.log('[CRON] cron.service.ts loaded');
 

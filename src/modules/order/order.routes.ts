@@ -14,7 +14,6 @@ export default async function orderRoutes(
   const service    = new OrderService(options.prisma);
   const controller = new OrderController(service);
 
-  // GET /v1/orders — only ADMIN can list
   fastify.get<{ Querystring: QueryOrdersDto }>(
     '/',
     {
@@ -63,7 +62,6 @@ export default async function orderRoutes(
     controller.getAllOrders.bind(controller)
   );
 
-  // POST /v1/orders — SELLER or ADMIN can create
   fastify.post<{ Body: CreateOrderDto }>(
     '/',
     {
@@ -115,7 +113,6 @@ export default async function orderRoutes(
     controller.createOrder.bind(controller)
   );
 
-  // PATCH /v1/orders/:id/status — only ADMIN
   fastify.patch<{
     Params: { id: string };
     Body: UpdateOrderStatusDto;

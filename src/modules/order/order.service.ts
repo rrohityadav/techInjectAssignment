@@ -1,9 +1,21 @@
 import { PrismaClient, OrderStatus } from '@prisma/client';
 import { CreateOrderDto, QueryOrdersDto, UpdateOrderStatusDto } from '@/modules/order/dto/order.dto';
+import { WebhookService } from '../webhook/webhook.service';
 
-
+interface Detail {
+  variationId: string;
+  sku: string;
+  originalStock: number;
+  price: number;
+  qty: number;
+  productId:string;
+}
 export class OrderService {
-  constructor(private readonly prisma: PrismaClient) {}
+  private webhookService: WebhookService;
+
+  constructor(private readonly prisma: PrismaClient) {
+    this.webhookService = new WebhookService(prisma);
+  }
 
   async createOrder(dto: CreateOrderDto) {
     // 1) Load & validate each variation
@@ -11,28 +23,33 @@ export class OrderService {
       const v = await this.prisma.productVariation.findUnique({
         where: { sku: item.sku },
         select: {
-          id: true,
-          stock: true,
-          price: true,
-          productId: true,
+          id:         true,
+          sku:        true,
+          stock:      true,
+          price:      true,
+          productId:  true,
         },
       });
       if (!v) throw new Error(`SKU not found: ${item.sku}`);
       if (v.stock < item.qty)
         throw new Error(`Insufficient stock for SKU ${item.sku}`);
+
       return {
-        variationId: v.id,
-        productId: v.productId,
-        price: v.price,
-        qty: item.qty,
-      };
+        variationId:   v.id,
+        sku:           v.sku,
+        originalStock: v.stock,
+        price:         v.price,
+        qty:           item.qty,
+        productId:     v.productId,
+      } as Detail;
     });
     const details = await Promise.all(detailPromises);
 
+    // 2) Compute total order amount
     const totalAmount = details.reduce((sum, d) => sum + d.price * d.qty, 0);
 
-    // 2) Atomically decrement stock & create order
-    return this.prisma.$transaction(async (tx) => {
+    // 3) Atomically decrement stock & create order
+    const order = await this.prisma.$transaction(async (tx) => {
       // a) Decrement each variation’s stock
       for (const d of details) {
         await tx.productVariation.update({
@@ -41,23 +58,29 @@ export class OrderService {
         });
       }
 
-      // b) Create the order + items
+      // b) Create the Order + its OrderItems
       return tx.order.create({
         data: {
           totalAmount,
           items: {
             create: details.map((d) => ({
               productId: d.productId,
-              quantity: d.qty,
-              price: d.price,
+              quantity:  d.qty,
+              price:     d.price,
             })),
           },
         },
         include: { items: true },
       });
     });
-  }
 
+    for (const d of details) {
+      const newStock = d.originalStock - d.qty;
+      await this.webhookService.notifyAll(d.sku, newStock);
+    }
+
+    return order;
+  }
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
     const o = await this.prisma.order.findUnique({ where: { id } });
     if (!o) throw new Error('Order not found');

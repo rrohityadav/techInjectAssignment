@@ -1,8 +1,14 @@
+import { initSentry } from './common/utils/sentry';
+
+
 console.log('DATABASE_URL from process.env:', process.env.DATABASE_URL);
 console.log('Attempting to load .env file from:', process.cwd());
 
+// console.log('DATABASE_URL from process.env:', process.env.DATABASE_URL);
+// console.log('Attempting to load .env file from:', process.cwd());
+
 import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { initSentry } from './common/utils/sentry';
+
 import sensible from '@fastify/sensible';
 import { PrismaClient } from '@prisma/client';
 import productRoutes from './modules/product/product.routes';
