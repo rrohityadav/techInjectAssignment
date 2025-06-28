@@ -1,31 +1,132 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x", "debian-openssl-3.0.x", "windows", "darwin", "darwin-arm64"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "foreignKeys"
 }
 
-// TODO: Define Product model
+// Product and related models
 model Product {
-  id          String    @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
   description String?
-  price       Float
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  inventory   Int       @default(0)
-  // orders Order[] // Example relation, uncomment and define Order model
+  category    String?
+  orderItems  OrderItem[] // Updated naming convention
+  variations  ProductVariation[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@map("products")
 }
 
-// TODO: Define Order model
-// model Order {
-//   id          String    @id @default(cuid())
-//   createdAt   DateTime  @default(now())
-//   updatedAt   DateTime  @updatedAt
-//   totalAmount Float
-//   products    Product[] // Example relation
-//   // userId      String // Example relation to a User model if you have one
-// } 
+model ProductVariation {
+  id         String               @id @default(cuid())
+  sku        String               @unique
+  price      Float
+  stock      Int                  @default(0)
+  productId  String
+  product    Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributes VariationAttribute[]
+  bom        BOM[]
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@map("product_variations")
+}
+
+model VariationAttribute {
+  id          String           @id @default(cuid())
+  name        String
+  value       String
+  variationId String
+  variation   ProductVariation @relation(fields: [variationId], references: [id], onDelete: Cascade)
+
+  @@map("variation_attributes")
+}
+
+model RawMaterial {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  unit        String
+  quantity    Float    @default(0)
+  supplier    String?
+  usedIn      BOM[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("raw_materials")
+}
+
+model BOM {
+  id               String           @id @default(cuid())
+  variationId      String
+  variation        ProductVariation @relation(fields: [variationId], references: [id], onDelete: Cascade)
+  rawMaterialId    String
+  rawMaterial      RawMaterial      @relation(fields: [rawMaterialId], references: [id], onDelete: Cascade)
+  quantityRequired Float
+
+  @@map("bom")
+}
+
+// Order and OrderItem
+model Order {
+  id          String      @id @default(cuid())
+  status      OrderStatus @default(PLACED)
+  totalAmount Float
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int     @default(1)
+  price     Float
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+model WebhookSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String
+  sku       String?
+  minStock  Int
+  createdAt DateTime @default(now())
+}
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String         // hashed
+  role          Role
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+enum OrderStatus {
+  PLACED
+  PAID
+  DISPATCHED
+}
+enum Role {
+  ADMIN
+  SELLER
+}

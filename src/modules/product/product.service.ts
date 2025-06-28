@@ -1,3 +1,4 @@
+
 import { PrismaClient, Product } from '@prisma/client';
 
 export class ProductService {
